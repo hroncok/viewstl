@@ -1,0 +1,190 @@
+Early history of the viewer...
+
+
+--Need to deal with a file, compare strings in order to get the poly points
+-- and their normals into a list.  (parse data is an effort toward this)
+
+to parse the file, these things are going to happen
+
+1.  read the file until I see solid and take the name for the window.
+
+2.  Build the poly list using the normals and vertices provided.
+
+3.  Continue #2 until the endsolid directive has been found.
+
+4.  On to the next!
+
+
+
+Draw this list onto screen.  The existing random poly code will probably do this
+
+At this point I hope to see something
+
+implement basic keyboard transforms in order to view and test image created
+from the above efforts
+
+Learn to deal with the mouse, and sub it for the keyboard options.  Should 
+take a look at GLUT events and how they are done.
+
+Lighting, and final presentation of data.
+
+Basic transforms to bring parts far from origin into view.  Also rotation center
+
+Interpet a command argument.  Need this for name of file to read.
+
+Deal with binary files.  My basic idea here was to put the bytes into an array
+and then put them into the variables piece by piece, using a pointer to the 
+target floating point variable.  This will have endian problems.  Probably can 
+play nasty tricks here and just put the bytes in the right way for the platform.
+The bad side of this is that it is going to have to work on a byte by byte basis
+
+----------------------------------------------------------------------------
+ViewSTL version 0.1 is done.  Mouse works kind of, keyboard works, and win32
+port works.  Have to put in a different malloc statement seems that windows
+does not know how to do the sizeof(float) thing.  Bummer.  It wants just a 
+number like malloc(x);  Seems to work other wise though.  I used the 
+value of 4 for a floating point variable. Not portable, but what is about 
+win32???
+
+I also think that the malloc code is wrong in that it does this:
+
+sizeof(float) or 4    *   poly_count+1 * 12
+
+Should probaly be (4*poly_count*12)+12
+
+Fix it later, ram is cheap!
+
+There are also a couple of includes extra needed for win32.  Have to just put 
+those in for now.  Maybe there is a way to define that ifdefine or something.
+
+Command args done also.  Was easy works the same on both platforms.
+
+Need to do error checking for this.
+
+-------------------------------------------------------------------------
+
+ViewSTL 0.2
+
+Need to implement Autoscale and Rotation Center.  Got to read more.
+
+These should be done using the center of the model as calculated from its 
+
+extents.  Done.
+
+Have to figure out how to transform the model into the screen, then rotate it.
+
+Also need to deal with the perspective thing.  How is a straight iso view done?
+
+Know this now.  Need to implement scale.
+
+Put rotation and scaling on the arrow keys (maybe)
+
+Improve mouse movement.  Going to have to do a lot more polling.  Done.
+
+Error checking is needed badly.  Not that this crashes much, but it will do
+stupid things if not given good files and args.  Done.
+
+ViewSTL 0.2x
+
+Lots of incremental changes current is 0.28
+
+- added error checking for files & command args.  Can't seem to make it crash
+
+- added experemental ortho view code
+
+- added switch to only redraw on view change so it does not hog as much CPU 
+  during idle time.
+
+- Program clean up lots of little things.  Cleaned up text output
+
+- Added frame rate counter.  Works correctly unless -f switch is on.  Won't 
+  bother fixing this.
+
+- broke the view init code into seperate function
+
+Still need to do lots of things.  See the code for the current list for this
+revision.  What is here is very stable and useable though.  Good.
+
+
+
+---------------------------------------------------------------------------
+
+ViewSTL 0.3
+
+Colors?  Transparency.  
+
+Binary File format.
+
+Maybe other SDRC format.
+
+Maybe parse command wild cards?  This could be cool.  Don't know if it would be
+needed though as the user could just write out a big stl file.
+
+
+----------- Process log -----------------
+
+0.30 Moved Poly code in to seperate functions
+     added transform to origin function.  Got that working.  Parts now 
+     appear to rotate about their centroid.  Fixed extent code.  It was 
+     reading every 12th poly!  Bummer
+
+0.31 (Stable)  Meets initial goals.  Can view ASCII STL files.  Basic scaling
+     rotation, and panning work with mouse.  Command options done.  Part is 
+     autoscaled on first window redraw based on its extents.  Clipping 
+     planes correct.  Going to compile this one for win32 and Linux as well.
+
+     Really long file names will cause a crash on IRIX (>60 chars).  This has
+     something to do with the display of info in the title bar of the window.
+
+Maybe add command line option for fast rotate (every third polygon)
+
+0.32 (Stable) Added compenstaion to pan and zoom to allow for large parts.
+     Basic idea was to take the Z_Depth and scale used for perspective and 
+     multiply by the tan of the field of view.  Something like this:
+     mouse_delta * tan(15)*Zdepth*scale*correctionfactor  Silenced the 
+     debug output for general use.  the -v option enables it if wanted.
+
+0.33 Interface change.  Use F1 F2 F3 for pan rotate and scale. SDRC 
+     Had to make it time based because I don't get button up and down 
+     events with GLUT.  Works ok, but depends a lot on the keyboard 
+     repeat rate.  (stable but for the keyboard on win32)
+     
+0.33 Added Linux branch to CVS.  Switching development platform to Linux for 
+     future versions of viewstl.  Backports will be done as time permits.
+     
+0.34 Made minor changes to README, ChangeLog, and the polygon drawing code 
+     resulting in a nice speed boost on many hardware / GL combinations.
+     
+0.34 Fixed mixed case problem.  'strcasecmp'   Added a sample test file to
+     CVS for testing.  
+
+* Noted that the STL file format allows for more than one body each with its 
+  own name.  Want to support this and file wildcards eventually.
+  
+0.35 Added build and bug fixes from Hans (noted in linux/viewstl.c)  For now
+     these changes are Linux only.  I don't have time at the moment to 
+     address the win32 or IRIX ports.  They remain at 0.33 and 0.34...
+     
+     
+
+  
+  
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

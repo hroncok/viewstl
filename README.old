@@ -1,0 +1,163 @@
+
+Building the source:
+
+*** If you build the newest Linux tree on IRIX or Win32, I would appreciate
+    seeing your changes as I do not have time to provide these at the moment ****
+    
+Thanks in advance!
+
+
+You are going to need the opengl, glu, and glut libs for your system.
+
+Go to [http://nehe.gamedev.net/opengl.asp] for some decent information on how to
+do this.  You may also consider a visit to http://www.opengl.org.
+
+viewstl is written in the C programming language.  Most any decent compilier
+should work.  The code is pretty simple at this time.  I have three reasons for
+writing this viewer.  One was that I needed a quick and dirty viewer with good
+lighting and simple interface.  Number two involves giving back something to the
+OSS community.  I am making very good use of all the tools out there right now, I
+personally feel that providing a tool for others is an excellent way to give
+something back for the work and knowledge that I have gained.  Finally, my code-fu
+is at a beginner level.  I find programming fun and wish to improve.
+
+On that last note, if you have feedback good or bad about this project, please
+forward that to doug@opengeek.org.  Some already have, and I appreciate it.
+(Thanks Thierry, things are coming along slowly as I have time.)
+
+Linux has become the primary development platform for this project.  I will always
+have a soft spot for SGI IRIX machines, but Linux is coming along nicely enough
+that I want to switch now.  For me that says a lot, YMMV!
+
+Building on Linux:
+
+Given that you have recent versions of the GL/mesa libs installed, the build process
+is simple.
+
+Make
+
+That's it.  There is no install option as the program is a single binary.  Put it
+somewhere in your path and run it as you would anything else.
+
+I am developing on Mandrake 8.2 at the moment.  Everything you need to compile this
+package is on the three downloadable CDs.  Make sure you have all the mesa packages
+installed.  One in particular is the mesa-devel set.  It has the GL, GLU and GLUT
+libs you need.
+
+UPDATE:  Building on Mandarake 10 with the development headers that come with the 
+         distro...
+
+
+Building on IRIX.
+
+ UPDATE:  The newest sources are in the Linux tree, no port time for now.
+
+ Install glut from the sgi pages. [www.sgi.com]
+
+ Edit the build script to indicate your compilier type and path.  In the very near
+ future I will provide a make file.  Until then, you might find editing the
+ Linux one easier.
+
+ The order of the lib includes in the command line to build the program is
+ important.  You can change most anything in there, but make those the same.
+ They are from the sgi man page on glut.
+
+ ./build (In the IRIX directory) builds the executable.
+
+As with the Linux process above, there is no install option as the program is a
+single binary.  Put it somewhere in your path and run it as you would anything else.
+
+
+Building on Win32
+
+ UPDATE:  The newest sources are in the linux tree, no port time for now.
+
+ I used visual studio for this edition as I had access to it.  All you need to do
+ is setup GL, GLU and GLUT, define the application as a console application, and
+ make sure that you include the GL, GLU, and GLUT libs in your project.
+
+ This page will get you started on setting up the proper environment...
+
+ http://www.cs.unc.edu/~mcneill/comp235/opengl_examples/setting_up_gl.html
+
+ There are many more like it just plug 'setting up openGL on win32' into google :)
+
+ I have not yet had the chance to build using GCC on win32 yet.  Most likely I
+ will not do this.  If you do, let me know how it goes.
+
+ Follow the usual compile, execute steps typical of M$ Visual Studio products.
+
+ I have noted lighting problems on some win32 platforms and graphics engine
+ combinations.  In particular SGI 320 VS + Win2K.  Lighting seems to illuminate the
+ wrong side (inside) of the model.  It is very likely that this is some fault of
+ mine, but at the moment, I am not aware of what it is.
+
+
+
+Installation (win32 only)
+
+ There really is no installation as the program is a single executable.  On win32
+ you need to include the glut.dll file with the program.  Put this in
+ /winnt/system for NT, somewhere in your path for 95 98 probably /windows will
+ work.
+
+
+Using the program:
+
+ Using the program is simple!  You type: viewstl [filename] [option] [option] If
+ the file is valid, you will get the image on screen pretty quickly.  You may
+ choose one option from each set like: -p -v  Options and file name need to be
+ given in the order shown if you run the program with no arguments.  Later I will
+ make the parser more robust.  It won't crash if you break this rule, you just
+ won't get what you want.
+
+ Once the program is displaying something, you can manupulate the model by holding
+ the buttons (one at a time) and moving the mouse.  Left button is pan, middle is
+ rotate, and right is zoom.
+
+ You can choose different display modes using f4, f5, and f6.
+
+ Optionally you can try using the f1, f2, and f3 keys to manupulate the mouse.
+ Because of the way GLUT works, this is not optimal, but it does appear to work.
+
+ Exit the program using the esc key, or close the window, or issue control-c in
+ the shell it was run from.
+
+ If you have a GUI that supports drag and drop execution of files, you can put
+ the program or a link to it on the desktop, and drag files onto it.  The
+ default options are setup for this.
+
+ There is a little more on the project home page on this.
+ http://viewstl.sourceforge.net
+
+
+Known Limitations 05-2002
+
+Rotation is poorly implemented.  Happens only on the X and Y axis and is cumulative.
+If you rotate the model several times around on or both axis, you will end up 'lost'
+as the rotation values have little to do with mouse motion.  Make small changes for
+now, or let me see some code that works better.  What I have done goes a long ways
+toward the goal of a quick and dirty viewer, but really is a poor hack.
+
+Lighting discussed above in the win32 version.
+
+Mixed Case ASCII files.  Right now viewstl wants everyting to be in lower case. This
+will get fixed soon.  Fixed in Linux 0.34 now.
+
+No binary file support (yet.)  I understand how this is going to get done, but feel
+that getting the foundation code right should come first.
+
+There still are some speed issues.  Most of which are in the drawing function, and
+the use of the GLUT library.  The first is addresed in this version.  On my machine
+(500Mhz PIII, Matrox G400, 192Mb RAM XFree4.0.1) frame rates for the sample model
+went from ~30Fps to well over 160!  Display of very large models (>100,000polys) is
+practical now.  The second issue will be dealt with in the future as I continue the
+rewrite of the program foundation.  Linux 0.34 only for now, win32 and IRIX code still
+at 0.33
+
+
+Comments?  Suggestions?  doug@opengeek.org
+
+
+
+
