@@ -6,7 +6,12 @@ CC = gcc
 CFLAGS = $(COMPILERFLAGS) $(INCLUDE)
 LIBRARIES = -lglut -lGL -lGLU -lX11 -lXext -lXmu -lXt -lXi -lm
 
-All: viewstl 
+all: viewstl 
 
 viewstl: viewstl.o
 	$(CC) $(CFLAGS) -o $@ $(LIBDIR) $< $(LIBRARIES) 
+
+clean:
+	rm *.o viewstl
+
+.PHONY: all clean
