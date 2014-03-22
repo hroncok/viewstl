@@ -1,0 +1,41 @@
+0.35 Added build and bug fixes from Hans (noted in linux/viewstl.c)  For now
+     these changes are Linux only.  I don't have time at the moment to 
+     address the win32 or IRIX ports.  They remain at 0.33 and 0.34...
+
+0.34 Made minor changes to README, ChangeLog, and the polygon drawing code 
+     resulting in a nice speed boost on many hardware / GL combinations.
+
+     Fixed mixed case problem.  'strcasecmp'   Added a sample test file to
+     CVS for testing.  
+
+* Noted that the STL file format allows for more than one body each with its 
+  own name.  Want to support this and file wildcards eventually.
+  
+0.33 Interface change.  Use F1 F2 F3 for pan rotate and scale. SDRC 
+     Had to make it time based because I don't get button up and down 
+     events with GLUT.  Works ok, but depends a lot on the keyboard 
+     repeat rate.  (stable but for the keyboard on win32)
+
+     Added Linux branch to CVS.  Switching development platform to Linux for 
+     future versions of viewstl.  Backports will be done as time permits.
+
+0.32 (Stable) Added compenstaion to pan and zoom to allow for large parts.
+     Basic idea was to take the Z_Depth and scale used for perspective and 
+     multiply by the tan of the field of view.  Something like this:
+     mouse_delta * tan(15)*Zdepth*scale*correctionfactor  Silenced the 
+     debug output for general use.  the -v option enables it if wanted.
+
+0.31 (Stable)  Meets initial goals.  Can view ASCII STL files.  Basic scaling
+     rotation, and panning work with mouse.  Command options done.  Part is 
+     autoscaled on first window redraw based on its extents.  Clipping 
+     planes correct.  Going to compile this one for win32 and Linux as well.
+
+     Really long file names will cause a crash on IRIX (>60 chars).  This has
+     something to do with the display of info in the title bar of the window.
+
+     Maybe add command line option for fast rotate (every third polygon)
+
+0.30 Moved Poly code in to seperate functions
+     added transform to origin function.  Got that working.  Parts now 
+     appear to rotate about their centroid.  Fixed extent code.  It was 
+     reading every 12th poly!  Bummer
