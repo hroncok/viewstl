@@ -1,17 +1,17 @@
 INCLUDE = -I/usr/X11R6/include
 LIBDIR  = -L/usr/X11/lib -L/usr/X11R6/lib
  
-COMPILERFLAGS = -O3 -fomit-frame-pointer -Wall -pipe
+COMPILERFLAGS = -O2 -fomit-frame-pointer -g -pipe -Wall -fexceptions -fstack-protector-strong -grecord-gcc-switches
 CC = gcc
 CFLAGS = $(COMPILERFLAGS) $(INCLUDE)
 LIBRARIES = -lglut -lGL -lGLU -lX11 -lXext -lXmu -lXt -lXi -lm
 
 all: viewstl 
 
-viewstl: viewstl.o
+viewstl: viewstl.c
 	$(CC) $(CFLAGS) -o $@ $(LIBDIR) $< $(LIBRARIES) 
 
 clean:
-	rm *.o viewstl
+	rm viewstl
 
 .PHONY: all clean
