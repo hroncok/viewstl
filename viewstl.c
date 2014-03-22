@@ -432,21 +432,21 @@ void mouseMotionPress(int x, int y)
 {
    if (verbose)
     printf("You did this with the mouse--> %i %i\n", x, y); 
-   if (BUTTON == LMB)
+   if (BUTTON == RMB)
     {
       PANx = PANx + ((MOUSEx - x)*(tanf(0.26179939)*(Z_Depth+scale)))*.005;
       PANy = PANy - ((MOUSEy - y)*(tanf(0.26179939)*(Z_Depth+scale)))*.005;
       MOUSEx = x;
       MOUSEy = y;
     } 
-   if (BUTTON == MMB)
+   if (BUTTON == LMB)
     {
       ROTy = ROTy - ((MOUSEx - x)*0.5);
       ROTx = ROTx - ((MOUSEy - y)*0.5);
       MOUSEx = x;
       MOUSEy = y;
     } 
-   if (BUTTON == RMB)
+   if (BUTTON == MMB)
     {
 scale = scale + ((MOUSEy - y)*(tanf(0.26179939)*(Z_Depth+scale)))*.01;
 oScale = oScale + ((MOUSEy - y)*(tanf(0.26179939)*(Z_Depth+scale)))*.01;
