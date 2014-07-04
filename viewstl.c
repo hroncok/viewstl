@@ -49,16 +49,7 @@
 
 /* Declarations ------------------------------------- */
 
-float *poly_list;  /* Pointer to the soon to be list of Polygons */
-char oneline[255];
-float t1, t2, t3;
-char end_stl_solid[10];
-char begin_stl_solid[10];
-char poly_normal[10];
-char poly_vertex[10];
-char poly_end[10];
 char arg1[100], arg2[20], arg3[20], window_name[120];
-int poly_count = 0; 
 FILE *filein; /* Filehandle for the STL file to be viewed */
 int window; /* The number of our GLUT window */
 int x;  /* general index */
@@ -82,43 +73,11 @@ float oScale = 1.0;
 int update = YES, idle_draw = YES;
 float Z_Depth = -5, Big_Extent = 10;
 int verbose = NO;
-stl_file* s;
+stl_file* stl;
+size_t v;
 
 
-/* This function puts all the polygons it finds into the global array poly_list */
-/* it uses the global variable Poly_Count to index this array Poly_Count is used */
-/* elsewhere so it needs to be left alone once this finishes */
-static void CollectPolygons()
-{
- for(poly_count = 0; poly_count < s->stats.number_of_facets; poly_count++) {
-   /* normal */
-   poly_list[0+(poly_count * 12)] = s->facet_start[poly_count].normal.x;
-   poly_list[1+(poly_count * 12)] = s->facet_start[poly_count].normal.y;
-   poly_list[2+(poly_count * 12)] = s->facet_start[poly_count].normal.z;
-   
-   /* vertices */
-   poly_list[3+(poly_count * 12)] = s->facet_start[poly_count].vertex[0].x;
-   poly_list[4+(poly_count * 12)] = s->facet_start[poly_count].vertex[0].y;
-   poly_list[5+(poly_count * 12)] = s->facet_start[poly_count].vertex[0].z;
-
-   poly_list[6+(poly_count * 12)] = s->facet_start[poly_count].vertex[1].x;
-   poly_list[7+(poly_count * 12)] = s->facet_start[poly_count].vertex[1].y;
-   poly_list[8+(poly_count * 12)] = s->facet_start[poly_count].vertex[1].z;
-
-   poly_list[9+(poly_count * 12)] = s->facet_start[poly_count].vertex[2].x;
-   poly_list[10+(poly_count * 12)] = s->facet_start[poly_count].vertex[2].y;
-   poly_list[11+(poly_count * 12)] = s->facet_start[poly_count].vertex[2].z;
-   if ((poly_count % 500) == 0)
-   {
-    if (verbose)
-     printf(".");
-   }
- }
- if (verbose)
-  printf("\n");
-}
-
-/* This function reads through the array of polygons (poly_list) to find the */
+/* This function reads through the polygons to find the */
 /* largest and smallest vertices in the model.  This data will be used by the */
 /* transform_model function to center the part at the origin for rotation */
 /* and easy autoscale */
@@ -126,52 +85,27 @@ static void FindExtents()
 {
 int x;
 /* Find geometry extents */
-for (x = 0 ; x < poly_count ; x = x + 1)
+for (x = 0 ; x < stl->stats.number_of_facets ; x = x + 1)
  {
   /* first the positive vertex check for each poly */
   /* this code needs to be way shorter, but go with what works */
-  if (poly_list[3+(x * 12)] > extent_pos_x)
-    extent_pos_x = poly_list[3+(x * 12)];
-  if (poly_list[4+(x * 12)] > extent_pos_y)
-    extent_pos_y = poly_list[4+(x * 12)];
-  if (poly_list[5+(x * 12)] > extent_pos_z)
-    extent_pos_z = poly_list[5+(x * 12)];
-
-  if (poly_list[6+(x * 12)] > extent_pos_x)
-    extent_pos_x = poly_list[6+(x * 12)];
-  if (poly_list[7+(x * 12)] > extent_pos_y)
-    extent_pos_y = poly_list[7+(x * 12)];
-  if (poly_list[8+(x * 12)] > extent_pos_z)
-    extent_pos_z = poly_list[8+(x * 12)];
-
-  if (poly_list[9+(x * 12)] > extent_pos_x)
-    extent_pos_x = poly_list[9+(x * 12)];
-  if (poly_list[10+(x * 12)] > extent_pos_y)
-    extent_pos_y = poly_list[10+(x * 12)];
-  if (poly_list[11+(x * 12)] > extent_pos_z)
-    extent_pos_z = poly_list[11+(x * 12)];
- 
-/* then the negative checks */
-  if (poly_list[3+(x * 12)] < extent_neg_x)
-    extent_neg_x = poly_list[3+(x * 12)];
-  if (poly_list[4+(x * 12)] < extent_neg_y)
-    extent_neg_y = poly_list[4+(x * 12)];
-  if (poly_list[5+(x * 12)] < extent_neg_z)
-    extent_neg_z = poly_list[5+(x * 12)];
-
-  if (poly_list[6+(x * 12)] < extent_neg_x)
-    extent_neg_x = poly_list[6+(x * 12)];
-  if (poly_list[7+(x * 12)] < extent_neg_y)
-    extent_neg_y = poly_list[7+(x * 12)];
-  if (poly_list[8+(x * 12)] < extent_neg_z)
-    extent_neg_z = poly_list[8+(x * 12)];
-
-  if (poly_list[9+(x * 12)] < extent_neg_x)
-    extent_neg_x = poly_list[9+(x * 12)];
-  if (poly_list[10+(x * 12)] < extent_neg_y)
-    extent_neg_y = poly_list[10+(x * 12)];
-  if (poly_list[11+(x * 12)] < extent_neg_z)
-    extent_neg_z = poly_list[11+(x * 12)];
+  for (v = 0; v < 3; v++)
+   {
+    if (stl->facet_start[x].vertex[v].x > extent_pos_x)
+      extent_pos_x = stl->facet_start[x].vertex[0].x;
+    if (stl->facet_start[x].vertex[v].y > extent_pos_y)
+      extent_pos_y = stl->facet_start[x].vertex[0].y;
+    if (stl->facet_start[x].vertex[v].z > extent_pos_z)
+      extent_pos_z = stl->facet_start[x].vertex[0].z;
+    
+    /* then the negative checks */
+    if (stl->facet_start[x].vertex[v].x < extent_neg_x)
+      extent_neg_x = stl->facet_start[x].vertex[0].x;
+    if (stl->facet_start[x].vertex[v].y < extent_neg_y)
+      extent_neg_y = stl->facet_start[x].vertex[0].y;
+    if (stl->facet_start[x].vertex[v].z < extent_neg_z)
+      extent_neg_z = stl->facet_start[x].vertex[0].z;
+   }
  }
 }
 
@@ -186,19 +120,14 @@ int x;
 float LongerSide, ViewAngle;
 
 /* first transform into positive quadrant */
-for (x = 0 ; x < poly_count ; x = x + 1)
+for (x = 0 ; x < stl->stats.number_of_facets ; x = x + 1)
  {
-  poly_list[3+(x * 12)] = poly_list[3+(x * 12)] + (0 - extent_neg_x);
-  poly_list[4+(x * 12)] = poly_list[4+(x * 12)] + (0 - extent_neg_y);
-  poly_list[5+(x * 12)] = poly_list[5+(x * 12)] + (0 - extent_neg_z);
-
-  poly_list[6+(x * 12)] = poly_list[6+(x * 12)] + (0 - extent_neg_x);
-  poly_list[7+(x * 12)] = poly_list[7+(x * 12)] + (0 - extent_neg_y);
-  poly_list[8+(x * 12)] = poly_list[8+(x * 12)] + (0 - extent_neg_z);
-
-  poly_list[9+(x * 12)] = poly_list[9+(x * 12)] + (0 - extent_neg_x);
-  poly_list[10+(x * 12)] = poly_list[10+(x * 12)] + (0 - extent_neg_y);
-  poly_list[11+(x * 12)] = poly_list[11+(x * 12)] + (0 - extent_neg_z);
+  for (v = 0; v < 3; v++)
+   {
+    stl->facet_start[x].vertex[v].x = stl->facet_start[x].vertex[v].x + (0 - extent_neg_x);
+    stl->facet_start[x].vertex[v].y = stl->facet_start[x].vertex[v].y + (0 - extent_neg_y);
+    stl->facet_start[x].vertex[v].z = stl->facet_start[x].vertex[v].z + (0 - extent_neg_z);
+   }
  }
 FindExtents();
 /* Do quick Z_Depth calculation while part resides in ++ quadrant */
@@ -223,19 +152,14 @@ if ((extent_pos_z > extent_pos_y) && (extent_pos_z > extent_pos_x))
    Big_Extent = extent_pos_z;
 
 /* Then calculate center and put it back to origin */
-for (x = 0 ; x < poly_count ; x = x + 1)
+for (x = 0 ; x < stl->stats.number_of_facets ; x = x + 1)
  {
-  poly_list[3+(x * 12)] = poly_list[3+(x * 12)] - (extent_pos_x/2);
-  poly_list[4+(x * 12)] = poly_list[4+(x * 12)] - (extent_pos_y/2);
-  poly_list[5+(x * 12)] = poly_list[5+(x * 12)] - (extent_pos_z/2);
-
-  poly_list[6+(x * 12)] = poly_list[6+(x * 12)] - (extent_pos_x/2);
-  poly_list[7+(x * 12)] = poly_list[7+(x * 12)] - (extent_pos_y/2);
-  poly_list[8+(x * 12)] = poly_list[8+(x * 12)] - (extent_pos_z/2);
-
-  poly_list[9+(x * 12)] = poly_list[9+(x * 12)] - (extent_pos_x/2);
-  poly_list[10+(x * 12)] = poly_list[10+(x * 12)] - (extent_pos_y/2);
-  poly_list[11+(x * 12)] = poly_list[11+(x * 12)] - (extent_pos_z/2);
+  for (v = 0; v < 3; v++)
+   {
+    stl->facet_start[x].vertex[v].x = stl->facet_start[x].vertex[v].x - (extent_pos_x/2);
+    stl->facet_start[x].vertex[v].y = stl->facet_start[x].vertex[v].y - (extent_pos_y/2);
+    stl->facet_start[x].vertex[v].z = stl->facet_start[x].vertex[v].z - (extent_pos_z/2); 
+   }
  }
 
 }
@@ -359,13 +283,13 @@ update = NO;
       glRotatef(ROTy, 0.0f, 1.0f, 0.0f);
       
     }
-for(x = 0 ; x < poly_count ; x++)
+for(x = 0 ; x < stl->stats.number_of_facets ; x++)
   {
   glBegin(GL_POLYGON);
-  glNormal3f(poly_list[0+(x * 12)],poly_list[1+(x * 12)], poly_list[2+(x * 12)]);
-  glVertex3f(poly_list[3+(x * 12)], poly_list[4+(x * 12)], poly_list[5+(x * 12)]);
-  glVertex3f(poly_list[6+(x * 12)], poly_list[7+(x * 12)], poly_list[8+(x * 12)]);
-  glVertex3f(poly_list[9+(x * 12)], poly_list[10+(x * 12)], poly_list[11+(x * 12)]);
+  glNormal3f(stl->facet_start[x].normal.x, stl->facet_start[x].normal.y, stl->facet_start[x].normal.z);
+  glVertex3f(stl->facet_start[x].vertex[0].x, stl->facet_start[x].vertex[0].y, stl->facet_start[x].vertex[0].z);
+  glVertex3f(stl->facet_start[x].vertex[1].x, stl->facet_start[x].vertex[1].y, stl->facet_start[x].vertex[1].z);
+  glVertex3f(stl->facet_start[x].vertex[2].x, stl->facet_start[x].vertex[2].y, stl->facet_start[x].vertex[2].z);
   glEnd();
   }
 /* swap the buffers to display, since double buffering is used.*/
@@ -453,7 +377,8 @@ void keyPressed(unsigned char key, int x, int y)
     { 
       /* shut down our window */
       glutDestroyWindow(window); 
-      
+      stl_close(stl);
+      free(stl);
       /* exit the program...normal termination. */
       exit(0);                   
     }
@@ -561,14 +486,6 @@ update = YES;
 int main(int argc, char *argv[]) 
 { 
 
-/* Assignments ---------------------------------------*/
-strcpy(poly_end, "endfacet");
-strcpy(end_stl_solid, "endsolid");
-strcpy(begin_stl_solid, "solid");
-strcpy(poly_normal, "facet");
-strcpy(poly_vertex, "vertex");
-strcpy(poly_end, "endfacet");
-
 /* Begin parsing command args.  Lame, but it works :)  */
 printf("  viewstl: ");
 filein = fopen(argv[1], "r");
@@ -616,24 +533,10 @@ if (argc == 4)
 
   }
 
-s = (stl_file*)malloc(sizeof(stl_file));
-memset(s,0,sizeof(stl_file));
-stl_open(s,argv[1]);
-
-poly_list = (float*)malloc(sizeof(float[(s->stats.number_of_facets+1)*12]));
-mem_size = sizeof(float[(s->stats.number_of_facets+1)*12]);
-if (verbose)
-{
- printf("           %i bytes allocated!\n", mem_size);
- printf("           Reading");
-}
-/* reset the poly counter so that it is also an index for the data */
-poly_count = 0;
-
-CollectPolygons();
-
-stl_close(s);
-free(s);
+stl = (stl_file*)malloc(sizeof(stl_file));
+memset(stl,0,sizeof(stl_file));
+stl_open(stl,argv[1]);
+mem_size = sizeof(float[(stl->stats.number_of_facets+1)*12]);
 
 FindExtents();
 
@@ -668,10 +571,10 @@ glutInitWindowPosition(0, 0);
 
 strcpy (arg1, "ViewStl 0.35 viewing: ");
 strcat (arg1, argv[1]);
-  
+
 /* getting a warning here about passing arg1 of sprinf incompatable pointer type ?? */
 /* WTF ?!? */
-if (sprintf(arg2, "       %i Polygons using ", poly_count))
+if (sprintf(arg2, "       %i Polygons using ", stl->stats.number_of_facets))
   {
   strcat (arg1, arg2);
   }
@@ -700,7 +603,7 @@ glutMotionFunc(&mouseMotionPress); /*Register the mouse motion function */
   
 /* Initialize our window. */
 InitGL(640, 480);
-  
+
 /* Start Event Processing Engine */  
 glutMainLoop();  
 
