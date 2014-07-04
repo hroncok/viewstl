@@ -317,12 +317,22 @@ if (FrameCount == 0)
 /* The function called whenever a mouse button event occurs */
 void mouseButtonPress(int button, int state, int x, int y)
 {
+   int oriantation;
    if (verbose)
-    printf(" mouse--> %i %i %i %i\n", button, state, x, y); 
-   BUTTON = button;
-   MOUSEx = x;
-   MOUSEy = y;
-   update = YES;
+    printf(" mouse--> %i %i %i %i\n", button, state, x, y);
+   
+   if ((button == 3) || (button == 4))
+    {
+     if (state == GLUT_UP) return;
+     oriantation = button*2 - 7;
+     scale = scale + oriantation*(10*(Z_Depth+scale))*.01;
+     oScale = oScale + oriantation*(10*(Z_Depth+scale))*.01;
+    } else {
+       BUTTON = button;
+       MOUSEx = x;
+       MOUSEy = y;
+    }
+    update = YES;
 }
 
 
