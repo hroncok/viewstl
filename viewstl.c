@@ -20,6 +20,8 @@
 #include <time.h>       /* For our FPS */
 #include <math.h>       /* Gotta do some trig */
 
+#include <admesh/stl.h>   /* STL loading */
+
 /* ASCII code for the various keys used */
 #define ESCAPE 27     /* esc */
 #define ROTyp  105    /* i   */
@@ -80,7 +82,7 @@ float oScale = 1.0;
 int update = YES, idle_draw = YES;
 float Z_Depth = -5, Big_Extent = 10;
 int verbose = NO;
-
+stl_file* s;
 
 
 /* This function puts all the polygons it finds into the global array poly_list */
@@ -88,56 +90,33 @@ int verbose = NO;
 /* elsewhere so it needs to be left alone once this finishes */
 static void CollectPolygons()
 {
- while ( !feof(filein) )
- {
+ for(poly_count = 0; poly_count < s->stats.number_of_facets; poly_count++) {
+   /* normal */
+   poly_list[0+(poly_count * 12)] = s->facet_start[poly_count].normal.x;
+   poly_list[1+(poly_count * 12)] = s->facet_start[poly_count].normal.y;
+   poly_list[2+(poly_count * 12)] = s->facet_start[poly_count].normal.z;
+   
+   /* vertices */
+   poly_list[3+(poly_count * 12)] = s->facet_start[poly_count].vertex[0].x;
+   poly_list[4+(poly_count * 12)] = s->facet_start[poly_count].vertex[0].y;
+   poly_list[5+(poly_count * 12)] = s->facet_start[poly_count].vertex[0].z;
 
-  fgets(oneline, 255, filein);
-  sscanf(oneline, "%s", arg1);
-  if (strcasecmp(arg1, poly_normal) == 0)  /* Is this a normal ?? */
-  {
-      sscanf(oneline, "%s %s %f %f %f", arg1, arg2, &t1, &t2, &t3);
-      poly_list[0+(poly_count * 12)] = t1;
-      poly_list[1+(poly_count * 12)] = t2;
-      poly_list[2+(poly_count * 12)] = t3;
-      
-  }
+   poly_list[6+(poly_count * 12)] = s->facet_start[poly_count].vertex[1].x;
+   poly_list[7+(poly_count * 12)] = s->facet_start[poly_count].vertex[1].y;
+   poly_list[8+(poly_count * 12)] = s->facet_start[poly_count].vertex[1].z;
 
-  if (strcasecmp(arg1, poly_vertex) == 0)  /* Is it a vertex ?  */
-  {
-       sscanf(oneline, "%s %f %f %f", arg1, &t1, &t2, &t3);
-       poly_list[3+(poly_count * 12)] = t1;
-       poly_list[4+(poly_count * 12)] = t2;
-       poly_list[5+(poly_count * 12)] = t3;
-
-       fgets(oneline, 255, filein);  /* Next two lines vertices also!  */
-       sscanf(oneline, "%s %f %f %f", arg1, &t1, &t2, &t3);
-       poly_list[6+(poly_count * 12)] = t1;
-       poly_list[7+(poly_count * 12)] = t2;
-       poly_list[8+(poly_count * 12)] = t3;
-
-       fgets(oneline, 255, filein);
-       sscanf(oneline, "%s %f %f %f", arg1, &t1, &t2, &t3);
-       poly_list[9+(poly_count * 12)] = t1;
-       poly_list[10+(poly_count * 12)] = t2;
-       poly_list[11+(poly_count * 12)] = t3;
-   } 
-
-   if (strcasecmp(arg1, poly_end) == 0)
+   poly_list[9+(poly_count * 12)] = s->facet_start[poly_count].vertex[2].x;
+   poly_list[10+(poly_count * 12)] = s->facet_start[poly_count].vertex[2].y;
+   poly_list[11+(poly_count * 12)] = s->facet_start[poly_count].vertex[2].z;
+   if ((poly_count % 500) == 0)
    {
-       poly_count = poly_count + 1;
-       if ((poly_count % 500) == 0)
-       {
-       if (verbose)
-         printf(".");
-       }
+    if (verbose)
+     printf(".");
    }
  }
-if (verbose)
- printf("\n");
+ if (verbose)
+  printf("\n");
 }
-
-
-
 
 /* This function reads through the array of polygons (poly_list) to find the */
 /* largest and smallest vertices in the model.  This data will be used by the */
@@ -604,6 +583,8 @@ if (filein == 0)
   exit(1);
 }
 
+fclose(filein);
+
 if (argc > 2)
   {
    strcpy(arg1, "-o");
@@ -635,28 +616,12 @@ if (argc == 4)
 
   }
 
+s = (stl_file*)malloc(sizeof(stl_file));
+memset(s,0,sizeof(stl_file));
+stl_open(s,argv[1]);
 
-
-/* Read through the file to get number of polygons so that we can malloc */
-/* The right amount of ram plus a little :)  */
-while ( !feof(filein) )
-{
-    fgets(oneline, 255, filein);
-    sscanf(oneline, "%s", arg1);
-    if (strcasecmp(arg1, poly_end)==0)
-       poly_count = poly_count + 1;
-}
-
-/* Back to top of file so that we can get the data into our array poly_list*/
-rewind(filein);
-if (verbose)
-  printf("           Poly Count = %i\n", poly_count);
-
-/* Ask our friendly OS to give us a place to put the polygons for a while */
-/* This does not work on win32.  Seems it does not know how to deal with */
-/* the sizeof thing...  Have to just plug in a value (4) damn...  */
-poly_list = (float*)malloc(sizeof(float[(poly_count+1)*12]));
-mem_size = sizeof(float[(poly_count+1)*12]);
+poly_list = (float*)malloc(sizeof(float[(s->stats.number_of_facets+1)*12]));
+mem_size = sizeof(float[(s->stats.number_of_facets+1)*12]);
 if (verbose)
 {
  printf("           %i bytes allocated!\n", mem_size);
@@ -666,6 +631,9 @@ if (verbose)
 poly_count = 0;
 
 CollectPolygons();
+
+stl_close(s);
+free(s);
 
 FindExtents();
 

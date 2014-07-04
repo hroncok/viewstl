@@ -6,7 +6,7 @@ Simple lightview STL viewer.
 Building
 --------
 
-To compile you'll need the opengl, glu, and glut libs and the gcc compiler for
+To compile you'll need the admesh, opengl, glu, and glut libs and the gcc compiler for
 your system. Then run `make`.
 
 Using
@@ -43,8 +43,3 @@ Run `./viewstl` to see all available options:
                                   -p (Perspective View)
                                   -f (Redraw only on view change)
                                   -v (Report debug info to STDOUT)
-
-Known limitations (aka TODO)
-----------------------------
-
-No binary file support (yet). Currently viewstl only shows ASCII STL files.
