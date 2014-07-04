@@ -529,9 +529,6 @@ int main(int argc, char *argv[]) {
   /* get a 640 x 480 window */
   glutInitWindowSize(640, 480);
 
-  /* the window starts at the upper left corner of the screen */
-  glutInitWindowPosition(0, 0);
-
   strcpy (arg1, "ViewStl 0.35 viewing: ");
   strcat (arg1, argv[1]);
 
