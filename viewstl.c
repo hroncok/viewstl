@@ -111,17 +111,10 @@ static void FindExtents() {
 /* Z depth calculation that will be used bring the model into view (mostly) */
 
 static void TransformToOrigin() {
-  int x;
   float LongerSide, ViewAngle;
 
   /* first transform into positive quadrant */
-  for (x = 0 ; x < stl->stats.number_of_facets ; x = x + 1) {
-    for (v = 0; v < 3; v++) {
-      stl->facet_start[x].vertex[v].x = stl->facet_start[x].vertex[v].x + (0 - extent_neg_x);
-      stl->facet_start[x].vertex[v].y = stl->facet_start[x].vertex[v].y + (0 - extent_neg_y);
-      stl->facet_start[x].vertex[v].z = stl->facet_start[x].vertex[v].z + (0 - extent_neg_z);
-    }
-  }
+  stl_translate(stl, 0, 0, 0);
   FindExtents();
   /* Do quick Z_Depth calculation while part resides in ++ quadrant */
   /* Convert Field of view to radians */
@@ -130,6 +123,8 @@ static void TransformToOrigin() {
     LongerSide = extent_pos_x;
   else
     LongerSide = extent_pos_y;
+
+  LongerSide = LongerSide + (extent_pos_z*(sin(FOV * (PI/180))/sin((90-FOV) * (PI/180))));
 
   /* Put the result where the main drawing function can see it */
   Z_Depth = ((LongerSide / 2) / tanf(ViewAngle));
@@ -145,14 +140,7 @@ static void TransformToOrigin() {
     Big_Extent = extent_pos_z;
 
   /* Then calculate center and put it back to origin */
-  for (x = 0 ; x < stl->stats.number_of_facets ; x = x + 1) {
-    for (v = 0; v < 3; v++) {
-      stl->facet_start[x].vertex[v].x = stl->facet_start[x].vertex[v].x - (extent_pos_x/2);
-      stl->facet_start[x].vertex[v].y = stl->facet_start[x].vertex[v].y - (extent_pos_y/2);
-      stl->facet_start[x].vertex[v].z = stl->facet_start[x].vertex[v].z - (extent_pos_z/2);
-    }
-  }
-
+  stl_translate_relative(stl, -extent_pos_x/2, -extent_pos_y/2, -extent_pos_z/2);
 }
 
 
@@ -473,15 +461,6 @@ int main(int argc, char *argv[]) {
 
   /* repair the normals a bit, to see the STL fine */
   stl_fix_normal_values(stl);
-
-  FindExtents();
-
-  /* Print the result of the extent calc */
-  if (verbose) {
-    printf("           Part extents are: x, y, z\n");
-    printf("           %f, %f, %f\n", extent_pos_x, extent_pos_y, extent_pos_z);
-    printf("           %f, %f, %f\n", extent_neg_x, extent_neg_y, extent_neg_z);
-  }
 
   TransformToOrigin();
 
