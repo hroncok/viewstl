@@ -387,6 +387,7 @@ void specialkeyPressed (int key, int x, int y) {
   /* Cool Display Stuff... */
   if (key == 4) {
     glPolygonMode(GL_FRONT, GL_FILL);
+    glPolygonMode(GL_BACK, GL_FILL);
   }
   if (key == 5) {
     glPolygonMode(GL_FRONT, GL_LINE);
