@@ -64,8 +64,8 @@ float rot_center_x, rot_center_y, rot_center_z;
 int FrameCount=0;
 float FrameRate=0;
 /* Settings for the light  */
-float Light_Ambient[]=  { 0.1f, 0.1f, 0.1f, 1.0f };
-float Light_Diffuse[]=  { 1.2f, 1.2f, 1.2f, 1.0f };
+float Light_Ambient[]=  { 0.0f, 0.0f, 0.0f, 1.0f };
+float Light_Diffuse[]=  { 1.0f, 1.0f, 1.0f, 1.0f };
 float Light_Position[]= { 2.0f, 2.0f, 0.0f, 1.0f };
 int ViewFlag = 0; /* 0=perspective, 1=ortho */
 float oScale = 1.0;
@@ -179,7 +179,7 @@ static void SetView(int Width, int Height) {
 /* A general OpenGL initialization function. */
 /* Called once from main() */
 void InitGL(int Width, int Height) {        /* We call this right after our OpenGL window is created.*/
-  glClearColor(0.1f, 0.0f, 0.0f, 0.0f);		/* This Will Clear The Background Color To Dark Red*/
+  glClearColor(0.15f, 0.15f, 0.2f, 0.0f);		/* This Will Clear The Background Color To Dark Red*/
   glClearDepth(1.0);				/* Enables Clearing Of The Depth Buffer*/
   glDepthFunc(GL_LESS);			        /* The Type Of Depth Test To Do*/
   glEnable(GL_DEPTH_TEST);		        /* Enables Depth Testing*/
