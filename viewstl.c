@@ -471,6 +471,9 @@ int main(int argc, char *argv[]) {
   memset(stl,0,sizeof(stl_file));
   stl_open(stl,argv[1]);
 
+  /* repair the normals a bit, to see the STL fine */
+  stl_fix_normal_values(stl);
+
   FindExtents();
 
   /* Print the result of the extent calc */
