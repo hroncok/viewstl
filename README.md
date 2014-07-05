@@ -26,6 +26,10 @@ zoom, and right is pan.
 
 You can choose different display modes using F4, F5, and F6.
 
+With F7 and F8 you can change if inverted polygons should be seen dark or transparent.
+
+With F9 you can inverse all polygons.
+
 Optionally you can try using the F1, F2, and F3 keys to emulate mouse clicks.
 Because of the way GLUT works, this is not optimal, but it does appear to work.
 

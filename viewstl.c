@@ -403,6 +403,9 @@ void specialkeyPressed (int key, int x, int y) {
   if (key == 8) {
     glEnable(GL_CULL_FACE);
   }
+  if (key == 9) {
+    stl_reverse_all_facets(stl);
+  }
   if (verbose)
     printf("Special Key--> %i at %i, %i screen location\n", key, x, y);
   update = YES;
