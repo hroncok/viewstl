@@ -9,9 +9,9 @@
 
 /* Integrated patches from Hans  hhof@users.sourceforge.net 0.35 */
 
-#include <GL/gl.h>   // OpenGL itself.
-#include <GL/glu.h>  // GLU support library.
-#include <GL/glut.h> // GLUT support library.
+#include <GL/gl.h>   /* OpenGL itself. */
+#include <GL/glu.h>  /* GLU support library */
+#include <GL/glut.h> /* GLUT support library */
 
 #include <unistd.h>     /* needed to sleep*/
 #include <stdlib.h>    /* for malloc() and exit() */
@@ -53,7 +53,6 @@ char arg1[100], arg2[20], arg3[20];
 FILE *filein; /* Filehandle for the STL file to be viewed */
 int window; /* The number of our GLUT window */
 int x;  /* general index */
-int mem_size;
 float scale = 0;
 float ROTx = 0, ROTy = 0;
 float PANx = 0, PANy = 0;
@@ -471,7 +470,6 @@ int main(int argc, char *argv[]) {
   stl = (stl_file*)malloc(sizeof(stl_file));
   memset(stl,0,sizeof(stl_file));
   stl_open(stl,argv[1]);
-  mem_size = sizeof(float[(stl->stats.number_of_facets+1)*12]);
 
   FindExtents();
 
