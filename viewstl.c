@@ -155,6 +155,13 @@ static void TransformToOrigin() {
 
 }
 
+void renderBitmapString(float x, float y, float z, void *font, char *text) {
+  char *c;
+  glRasterPos3f(x, y,z);
+  for (c=text; *c != '\0'; c++) {
+    glutBitmapCharacter(font, *c);
+  }
+}
 
 /* Sets up Projection matrix according to command switch -o or -p */
 /* called from initgl and the window resize function */
@@ -251,6 +258,7 @@ void DrawGLScene()
     glVertex3f(stl->facet_start[x].vertex[2].x, stl->facet_start[x].vertex[2].y, stl->facet_start[x].vertex[2].z);
     glEnd();
   }
+  renderBitmapString(10,10,10,GLUT_BITMAP_HELVETICA_18,"TEST");
   /* swap the buffers to display, since double buffering is used.*/
   glutSwapBuffers();
 
@@ -418,7 +426,6 @@ void specialkeyPressed (int key, int x, int y) {
     printf("Special Key--> %i at %i, %i screen location\n", key, x, y);
   update = YES;
 }
-
 
 
 
