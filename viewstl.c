@@ -49,7 +49,7 @@
 
 /* Declarations ------------------------------------- */
 
-char arg1[100], arg2[20], arg3[20], window_name[120];
+char arg1[100], arg2[20], arg3[20];
 FILE *filein; /* Filehandle for the STL file to be viewed */
 int window; /* The number of our GLUT window */
 int x;  /* general index */
@@ -177,29 +177,6 @@ static void SetView(int Width, int Height) {
 
 }
 
-
-
-/* Frame rate counter.  Based off of the Oreilly OGL demo !  */
-/* updates the global variables FrameCount & FrameRate each time it is called. */
-/* called from the main drawing function */
-static void GetFPS() {
-  static clock_t last=0;
-  clock_t now;
-  float delta;
-
-  if (++FrameCount >= FR_SAMPLES) {
-    now  = clock();
-    delta= (now - last) / (float) CLOCKS_PER_SEC;
-    last = now;
-
-    FrameRate = FR_SAMPLES / delta;
-    FrameCount = 0;
-  }
-}
-
-
-
-
 /* A general OpenGL initialization function. */
 /* Called once from main() */
 void InitGL(int Width, int Height) {        /* We call this right after our OpenGL window is created.*/
@@ -277,13 +254,7 @@ void DrawGLScene()
   }
   /* swap the buffers to display, since double buffering is used.*/
   glutSwapBuffers();
-  GetFPS();  /* Get frame rate stats */
 
-  /* Copy saved window name into temp string arg1 so that we can add stats */
-  strcpy (arg1, window_name);
-  if (sprintf(arg2, "%.2f FPS", FrameRate)) {
-    strcat (arg1, arg2);
-  }
   /* cut down on the number of redraws on window title.  Only draw once per sample*/
   if (FrameCount == 0) {
     glutSetWindowTitle(arg1);
@@ -529,24 +500,9 @@ int main(int argc, char *argv[]) {
   /* get a 640 x 480 window */
   glutInitWindowSize(640, 480);
 
-  strcpy (arg1, "ViewStl 0.35 viewing: ");
-  strcat (arg1, argv[1]);
+  strcpy (arg1, argv[1]);
+  strcat (arg1, " - viewstl");
 
-  /* getting a warning here about passing arg1 of sprinf incompatable pointer type ?? */
-  /* WTF ?!? */
-  if (sprintf(arg2, "       %i Polygons using ", stl->stats.number_of_facets)) {
-    strcat (arg1, arg2);
-  }
-  if (sprintf(arg2, "%i Kb    ", mem_size/1024)) {
-    strcat (arg1, arg2);
-  }
-
-  /* save most of the name for use later */
-  strcpy (window_name, arg1);
-
-  if (sprintf(arg2, "%.2f FPS", FrameRate)) {
-    strcat (arg1, arg2);
-  }
   window = glutCreateWindow(arg1);
 
   /* Register the event callback functions since we are using GLUT */
