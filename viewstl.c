@@ -52,7 +52,7 @@
 char arg1[100], arg2[20], arg3[20];
 FILE *filein; /* Filehandle for the STL file to be viewed */
 int window; /* The number of our GLUT window */
-int x;  /* general index */
+size_t x;  /* general index */
 float scale = 0;
 float ROTx = 0, ROTy = 0;
 float PANx = 0, PANy = 0;
@@ -234,9 +234,9 @@ void DrawGLScene()
   for(x = 0 ; x < stl->stats.number_of_facets ; x++) {
     glBegin(GL_POLYGON);
     glNormal3f(stl->facet_start[x].normal.x, stl->facet_start[x].normal.y, stl->facet_start[x].normal.z);
-    glVertex3f(stl->facet_start[x].vertex[0].x, stl->facet_start[x].vertex[0].y, stl->facet_start[x].vertex[0].z);
-    glVertex3f(stl->facet_start[x].vertex[1].x, stl->facet_start[x].vertex[1].y, stl->facet_start[x].vertex[1].z);
-    glVertex3f(stl->facet_start[x].vertex[2].x, stl->facet_start[x].vertex[2].y, stl->facet_start[x].vertex[2].z);
+    for (v = 0; v < 3; v++) {
+      glVertex3f(stl->facet_start[x].vertex[v].x, stl->facet_start[x].vertex[v].y, stl->facet_start[x].vertex[v].z);
+    }
     glEnd();
   }
   /* swap the buffers to display, since double buffering is used.*/
