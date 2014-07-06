@@ -36,9 +36,6 @@
 #define RMB 2   /* Right */
 /* Number of samples for frame rate */
 #define FR_SAMPLES 10
-/* ViewFlag arguments */
-#define ORTHO 1
-#define PERSPECTIVE 0
 #define YES 1
 #define NO 0
 /* Other Constants */
@@ -67,7 +64,6 @@ float FrameRate=0;
 float Light_Ambient[]=  { 0.0f, 0.0f, 0.0f, 1.0f };
 float Light_Diffuse[]=  { 1.0f, 1.0f, 1.0f, 1.0f };
 float Light_Position[]= { 2.0f, 2.0f, 0.0f, 1.0f };
-int ViewFlag = 0; /* 0=perspective, 1=ortho */
 float oScale = 1.0;
 int update = YES, idle_draw = YES;
 float Z_Depth = -5, Big_Extent = 10;
@@ -152,16 +148,8 @@ static void SetView(int Width, int Height) {
     printf("Window Aspect is: %f\n", aspect);
 
 
-  if (ViewFlag == PERSPECTIVE) {
-    /* Calculate The Aspect Ratio Of The Window*/
-    gluPerspective(FOV,(GLfloat)Width/(GLfloat)Height,0.1f,(Z_Depth + Big_Extent));
-  }
-
-  if (ViewFlag == ORTHO) {
-    /* glOrtho(left, right, bottom, top, near, far) */
-    glOrtho((extent_neg_x*1.2f), (extent_pos_x*1.2f), (extent_neg_y*aspect), (extent_pos_y*aspect), -1.0f, 10.0f);
-  }
-
+  /* Calculate The Aspect Ratio Of The Window*/
+  gluPerspective(FOV,(GLfloat)Width/(GLfloat)Height,0.1f,(Z_Depth + Big_Extent));
 }
 
 /* A general OpenGL initialization function. */
@@ -215,22 +203,11 @@ void DrawGLScene()
     return;
   update = NO;
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);	/* Clear The Screen And The Depth Buffer*/
-  /* for now use two different methods of scaling depending on ortho or perspective */
-  if (ViewFlag == PERSPECTIVE) {
-    glLoadIdentity();
-    glTranslatef(PANx, PANy, (Z_Depth + scale));
-    glRotatef(ROTx, 1.0f, 0.0f, 0.0f);
-    glRotatef(ROTy, 0.0f, 1.0f, 0.0f);
-  }
+  glLoadIdentity();
+  glTranslatef(PANx, PANy, (Z_Depth + scale));
+  glRotatef(ROTx, 1.0f, 0.0f, 0.0f);
+  glRotatef(ROTy, 0.0f, 1.0f, 0.0f);
 
-  /* ortho scaling is broken */
-  if (ViewFlag == ORTHO) {
-    glLoadIdentity();
-    glTranslatef(PANx, PANy, -5.0);
-    glRotatef(ROTx, 1.0f, 0.0f, 0.0f);
-    glRotatef(ROTy, 0.0f, 1.0f, 0.0f);
-
-  }
   for(x = 0 ; x < stl->stats.number_of_facets ; x++) {
     glBegin(GL_POLYGON);
     glNormal3f(stl->facet_start[x].normal.x, stl->facet_start[x].normal.y, stl->facet_start[x].normal.z);
@@ -424,34 +401,23 @@ int main(int argc, char *argv[]) {
   filein = fopen(argv[1], "r");
   if (filein == 0) {
     printf("This is how you invoke the viewer... \n");
-    printf("           Usage:  viewstl [file] (-o or -p) (-f or -v)\n");
-    printf("           Valid Options are: -o (Ortho View EXPEREMENTAL)\n");
-    printf("                              -p (Perspective View)\n");
-    printf("                              -f (Redraw only on view change)\n");
+    printf("           Usage:  viewstl [file] (-f or -v)\n");
+    printf("           Valid Options are: -f (Redraw only on view change)\n");
     printf("                              -v (Report debug info to STDOUT)\n");
     exit(1);
   }
 
   fclose(filein);
 
-  if (argc > 2) {
-    strcpy(arg1, "-o");
-    if (strcmp(argv[2], arg1) == 0) {
-      printf("Running in Ortho View\n");
-      ViewFlag = ORTHO;
-    }
-  }
-  if (ViewFlag == PERSPECTIVE) {
-    printf("Running in Perspective View\n");
-  }
-  if (argc == 4) {
+
+  if (argc == 3) {
     strcpy(arg1, "-f");
-    if (strcmp(argv[3], arg1) == 0) {
+    if (strcmp(argv[2], arg1) == 0) {
       printf("           Redrawing only on view change\n");
       idle_draw = NO;
     }
     strcpy(arg1, "-v");
-    if (strcmp(argv[3], arg1) == 0) {
+    if (strcmp(argv[2], arg1) == 0) {
       printf("           Debug Output Enabled\n");
       verbose = YES;
     }
