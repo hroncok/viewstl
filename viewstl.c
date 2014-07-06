@@ -218,11 +218,6 @@ void DrawGLScene()
   }
   /* swap the buffers to display, since double buffering is used.*/
   glutSwapBuffers();
-
-  /* cut down on the number of redraws on window title.  Only draw once per sample*/
-  if (FrameCount == 0) {
-    glutSetWindowTitle(arg1);
-  }
 }
 
 
