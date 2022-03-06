@@ -1,0 +1,39 @@
+name: viewstl
+base: core20
+version: '0.1'
+summary: Views stl files
+description: |
+    Simple cli application that views an STL file
+#grade: devel
+confinement: strict
+apps:
+  viewstl:
+    command: bin/viewstl
+    environment:
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/mesa:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/mesa-gl:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/xorg:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio/
+      LIBGL_DRIVERS_PATH: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri
+    plugs:
+      - x11
+      - opengl         
+      - wayland
+      - home
+    
+parts:
+  viewstl:
+    plugin: make
+    source: .
+    build-packages: 
+      - libxmu-dev  
+      - libadmesh-dev 
+      - freeglut3-dev 
+      - libqt5charts5-dev 
+      - libglc-dev
+      - libxi-dev
+    stage-packages:
+      - libglu1-mesa
+      - libxmu6
+      - libadmesh1
+      - freeglut3    
+      - libqt5charts5
+      - libglc0
+      - libxi6

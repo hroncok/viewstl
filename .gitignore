@@ -17,3 +17,5 @@
 *.out
 *.app
 viewstl
+*.snap
+.idea/
