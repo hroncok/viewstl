@@ -11,7 +11,7 @@ all: viewstl
 install: viewstl
 	echo DESTDIR: $(prefix)
 	mkdir -p $(DESTDIR)/bin/
-	cp viewstl $(DESTDIR)/bin/
+	cp -p viewstl $(DESTDIR)/bin/
 
 viewstl: viewstl.c
 	$(CC) $(CFLAGS) -o $@ $(LIBDIR) $< $(LIBRARIES)
